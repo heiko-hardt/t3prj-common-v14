@@ -1,0 +1,19 @@
+# Operating system
+.DS_Store
+Thumbs.db
+
+# IntelliJ IDEA & PhpStorm
+.idea
+
+# Runtime
+/public/*
+!/public/.htaccess
+!/public/info.php
+/var
+/vendor
+/.env
+
+# Common
+/.local.*
+/**/*.cache
+/auth.json
