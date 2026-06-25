@@ -1,0 +1,28 @@
+---
+services:
+
+  web:
+    build:
+      context: ./
+      dockerfile: dockerfile.web
+    env_file: .env
+    image: heikohardt-codespc/php:8.4.22-testing
+    network_mode: service:db
+    volumes:
+      - ../..:/workspaces
+
+  db:
+    command:
+      [
+        "mysqld",
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+        "--max_allowed_packet=64M",
+      ]
+    env_file: .env
+    image: mariadb:10.11
+    volumes:
+      - storage_db:/var/lib/mysql
+
+volumes:
+  storage_db: ~

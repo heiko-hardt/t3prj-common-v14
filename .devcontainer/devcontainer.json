@@ -1,0 +1,42 @@
+// Reference: https://containers.dev/implementors/json_reference/
+// Guide: https://containers.dev/guide/dockerfile#docker-compose
+{
+	// General devcontainer.json properties
+	// https://containers.dev/implementors/json_reference/#general-properties
+	"name": "T3Prj: Common TYPO3 v.14.3 LTS Environment",
+	"containerEnv": {
+		"SHELL": "/bin/zsh"
+	},
+	"forwardPorts": [
+		8080
+	],
+	"overrideCommand": false,
+	"remoteUser": "developer",
+	"shutdownAction": "stopCompose",
+	// Docker Compose specific properties
+	// https://containers.dev/implementors/json_reference/#compose-specific
+	"dockerComposeFile": "../.docker/compose.yaml",
+	"service": "web",
+	"runServices": [
+		"web",
+		"db"
+	],
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	// Lifecycle scripts
+	// https://containers.dev/implementors/json_reference/#lifecycle-scripts
+	"postCreateCommand": {
+		"www": "sudo rm -rf /var/www/html && sudo chown -R developer:developer /var/www && ln -s /workspaces/${localWorkspaceFolderBasename} /var/www/html",
+		"env": "[ -f ../.devcontainer.init ] && bash ../.devcontainer.init || true"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"bmewburn.vscode-intelephense-client",
+				"cweijan.vscode-mysql-client2",
+				"EditorConfig.EditorConfig",
+				"esbenp.prettier-vscode",
+				"xdebug.php-debug"
+			]
+		}
+	}
+}
