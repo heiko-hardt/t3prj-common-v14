@@ -21,6 +21,7 @@ init:
 	@${MAKE} -s fs-prepare
 	@${MAKE} -s composer-install
 	@${MAKE} -s typo3-setup
+	@${MAKE} -s typo3-additional
 	@${MAKE} -s typo3-maintenance
 	@${MAKE} -s url
 
@@ -70,26 +71,30 @@ composer-update:
 	@echo "Update composer ..."
 	@composer update --optimize-autoloader --classmap-authoritative --no-progress --no-interaction
 
-.PHONY: typo3-maintenance
-typo3-maintenance:
-	@echo "TYPO3 maintenance ..."
-	@vendor/bin/typo3 database:updateschema
-	@vendor/bin/typo3 extension:setup
-	@vendor/bin/typo3 cache:flush
-	@vendor/bin/typo3 cache:warmup
-
 .PHONY: typo3-setup
 typo3-setup:
 	@echo "setup typo3 ..."
-	@vendor/bin/typo3 install:setup \
-		--database-driver=pdo_mysql \
-		--database-user-name=${DB_USER} \
-		--database-user-password="${DB_PASSWORD}" \
-		--database-host-name=${DB_HOST} \
-		--database-name=${DB_DATABASE} \
-		--admin-user-name=${DB_USER} \
-		--admin-password="${DB_PASSWORD}" \
-		--site-name='TYPO3 Common v.14 LTS' \
-		--web-server-config=apache \
-		--use-existing-database \
+	vendor/bin/typo3 setup \
+		--driver=pdoMysql \
+		--host=${DB_HOST} \
+		--dbname=${DB_DATABASE} \
+		--username=${DB_USER} \
+		--password="${DB_PASSWORD}" \
+		--admin-username=${DB_USER} \
+		--admin-user-password="${DB_PASSWORD}" \
+		--project-name='TYPO3 Common v.14 LTS' \
+		--server-type=apache \
 		--no-interaction
+
+.PHONY: typo3-additional
+typo3-additional:
+	@rm -rf config/system/additional.php
+	@mkdir -p config/system/
+	@printf '<?php\n\ndeclare(strict_types=1);\n\nuse HeikoHardt\\Typo3EnvConfigurator\\Configurator;\n\n$$GLOBALS["TYPO3_CONF_VARS"] = array_replace_recursive(\n  $$GLOBALS["TYPO3_CONF_VARS"],\n  Configurator::fromEnvironment()\n);\n' > config/system/additional.php
+
+.PHONY: typo3-maintenance
+typo3-maintenance:
+	@echo "TYPO3 maintenance ..."
+	@vendor/bin/typo3 extension:setup
+	@vendor/bin/typo3 cache:flush
+	@vendor/bin/typo3 cache:warmup
