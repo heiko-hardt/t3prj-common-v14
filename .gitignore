@@ -6,9 +6,8 @@ Thumbs.db
 .idea
 
 # Runtime
-/public/*
-!/public/.htaccess
-!/public/info.php
+/config
+/public
 /var
 /vendor
 /.env
