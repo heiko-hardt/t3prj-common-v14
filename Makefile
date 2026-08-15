@@ -18,7 +18,6 @@ url:
 init:
 	@${MAKE} -s db-cleanup
 	@${MAKE} -s fs-cleanup
-	@${MAKE} -s fs-prepare
 	@${MAKE} -s composer-install
 	@${MAKE} -s typo3-setup
 	@${MAKE} -s typo3-additional
@@ -29,6 +28,7 @@ init:
 db-auth:
 	@echo "  - create temporary auth file"
 	@echo "[client]\nhost=${DB_HOST}\nport=3306\nuser=${DB_USER}\npassword=${DB_PASSWORD}\nskip-ssl = true\n" > /tmp/.auth.cnf
+	@chmod 600 /tmp/.auth.cnf
 
 .PHONY: db-cleanup
 db-cleanup:
