@@ -12,20 +12,26 @@ ARG APP_GROUP_ID=1000
 ARG WEB_SERVER_NAME=localhost
 ARG WEB_DOCUMENT_ROOT=/var/www/html/public
 
-# Common tools and local settings
+# Locales & Timezone
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        locales \
-        sudo \
+    && apt-get install -y --no-install-recommends locales tzdata \
     && rm -rf /var/lib/apt/lists/* \
-    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
-    && locale-gen
+    && sed -i -e 's/# de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/' \
+              -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
+    && locale-gen \
+    && ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime \
+    && echo "Europe/Berlin" > /etc/timezone
 
 # System user and group
-RUN groupadd -g $APP_GROUP_ID $APP_GROUP_NAME \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends sudo \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -g $APP_GROUP_ID $APP_GROUP_NAME \
     && useradd -u $APP_USER_ID -g $APP_GROUP_ID -m -s /bin/bash $APP_USER_NAME \
     && echo $APP_USER_NAME ALL=\(root\) NOPASSWD:ALL >/etc/sudoers.d/$APP_USER_NAME \
-    && chmod 0440 /etc/sudoers.d/$APP_USER_NAME
+    && chmod 0440 /etc/sudoers.d/$APP_USER_NAME \
+    && mkdir -p /var/www/html \
+    && chown ${APP_USER_NAME}:${APP_GROUP_NAME} /var/www/html
 
 # Apache Webserver
 RUN echo "ServerName localhost" > /etc/apache2/conf-available/servername.conf \
@@ -65,21 +71,16 @@ RUN apt-get update \
 
 
 # https://getcomposer.org/download/ (Latest LTS)
-ARG COMPOSER_VERSION="2.10.1"
+ARG COMPOSER_VERSION="2.10.2"
 # https://packagist.org/packages/xdebug/xdebug
-ARG PHP_XDEBUG_VERSION="3.5.1"
+ARG PHP_XDEBUG_VERSION="3.5.3"
 # https://github.com/php/pie/releases
-ARG PIE_VERSION="1.4.0"
-# https://github.com/aptible/supercronic/releases
-ARG SUPERCRONIC_VERSION="0.2.34"
-# Target architecture setup by buildx (linux/amd64, linux/arm64, linux/arm/v7)
-ARG TARGETARCH
+ARG PIE_VERSION="1.4.9"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         default-mysql-client \
         git \
-        git-flow \
         make \
         mc \
         openssh-client \
@@ -99,11 +100,7 @@ RUN apt-get update \
     # Add custom ini parameter
     && printf "[PHP]\nmemory_limit = 512M\nmax_execution_time = 3600\nmax_input_vars = 1500\npcre.jit = 1\nupload_max_filesize = 50M\npost_max_size = 50M\n\n[Date]\ndate.timezone = Europe/Berlin\n" > "$PHP_INI_DIR/conf.d/additional.ini" \
     # Fetch & install composer binary
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=${COMPOSER_VERSION} --filename=composer \
-    # Supercronic
-    && curl -fsSLO "https://github.com/aptible/supercronic/releases/download/v${SUPERCRONIC_VERSION}/supercronic-linux-${TARGETARCH}" \
-    && chmod +x "supercronic-linux-${TARGETARCH}" \
-    && mv "supercronic-linux-${TARGETARCH}" /usr/local/bin/supercronic
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=${COMPOSER_VERSION} --filename=composer
 
 
 USER ${APP_USER_NAME}:${APP_GROUP_NAME}
