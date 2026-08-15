@@ -52,8 +52,6 @@
         }
     },
     "require-dev": {
-        "helhum/config-loader": "^0.12.6",
-        "helhum/dotenv-connector": "^3.2",
-        "helhum/typo3-console": "^9.0"
+        "heikohardt/typo3-env-configurator": "^1.0"
     }
 }
