@@ -25,8 +25,7 @@
 	// Lifecycle scripts
 	// https://containers.dev/implementors/json_reference/#lifecycle-scripts
 	"postCreateCommand": {
-		"www": "sudo rm -rf /var/www/html && sudo chown -R developer:developer /var/www && ln -s /workspaces/${localWorkspaceFolderBasename} /var/www/html",
-		"env": "[ -f ../.devcontainer.init ] && bash ../.devcontainer.init || true"
+		"www": "sudo rm -rf /var/www/html && sudo chown -R developer:developer /var/www && ln -s /workspaces/${localWorkspaceFolderBasename} /var/www/html"
 	},
 	"customizations": {
 		"vscode": {

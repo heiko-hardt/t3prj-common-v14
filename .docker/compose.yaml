@@ -6,7 +6,7 @@ services:
       context: ./
       dockerfile: dockerfile.web
     env_file: .env
-    image: heikohardt-codespc/php:8.4.22-testing
+    image: hhdev-remote/php:8.4.22-dev
     network_mode: service:db
     volumes:
       - ../..:/workspaces
