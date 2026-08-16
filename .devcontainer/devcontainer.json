@@ -13,6 +13,26 @@
 	"overrideCommand": false,
 	"remoteUser": "developer",
 	"shutdownAction": "stopCompose",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				// PHP
+				"bmewburn.vscode-intelephense-client",
+				"recca0120.vscode-phpunit",
+				"xdebug.php-debug",
+				// MySQL
+				"cweijan.vscode-mysql-client2",
+				// Makefile
+				"ms-vscode.makefile-tools",
+				// Formatters
+				"EditorConfig.EditorConfig",
+				"esbenp.prettier-vscode",
+				"lumirelle.shell-format-rev",
+				"redhat.vscode-yaml",
+				"redhat.vscode-xml"
+			]
+		}
+	},
 	// Docker Compose specific properties
 	// https://containers.dev/implementors/json_reference/#compose-specific
 	"dockerComposeFile": "../.docker/compose.yaml",
@@ -26,16 +46,5 @@
 	// https://containers.dev/implementors/json_reference/#lifecycle-scripts
 	"postCreateCommand": {
 		"www": "sudo rm -rf /var/www/html && sudo chown -R developer:developer /var/www && ln -s /workspaces/${localWorkspaceFolderBasename} /var/www/html"
-	},
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"bmewburn.vscode-intelephense-client",
-				"cweijan.vscode-mysql-client2",
-				"EditorConfig.EditorConfig",
-				"esbenp.prettier-vscode",
-				"xdebug.php-debug"
-			]
-		}
 	}
 }
